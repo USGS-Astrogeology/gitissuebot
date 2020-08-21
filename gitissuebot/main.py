@@ -194,7 +194,7 @@ def close_issue(issueid, query_func=run_query):
     }}"""
     return query_func(query)
     
-def find_and_update_inactive_issues(issues, config, query_func=run_query):
+def find_and_update_inactive_issues(issues, query_func=run_query):
     """
     Parse a list of of GitHub API response issues and
     update those issue which meet the inactivity criteria.
