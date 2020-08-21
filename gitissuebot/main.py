@@ -37,7 +37,7 @@ def get_issues(query_func=run_query):
     # Query to get issues, comments, and reactions to comments; the `last:1` is currently hard coded to only impact a single issue. Remove to process all.
     query = f"""
     query {{
-      repository(owner:"USGS-Astrogeology", name:"ISIS3") {{
+      repository(owner:"{config['owner']}", name:"{config['repository']}") {{
         openIssues: issues(states: OPEN, last:1) {{
           edges {{
             node {{

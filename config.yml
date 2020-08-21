@@ -1,4 +1,6 @@
 git_url: "https://api.github.com/graphql"
+owner: "USGS-Astrogeology"
+repository: "ISIS3"
 APIKEY: "ADD YOUR KEY"
 
 labelids:
