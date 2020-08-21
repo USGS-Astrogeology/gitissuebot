@@ -1,4 +1,6 @@
 git_url: "mock://test.org"
+owner: "NoOneKnows"
+repository: "TestTime"
 APIKEY: "my_magic_secret"
 
 labelids:
