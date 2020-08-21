@@ -1,0 +1,30 @@
+git_url: "mock://test.org"
+APIKEY: "my_magic_secret"
+
+labelids:
+  inactive: "MDU6TGFiZWwyMjg1Mjc0MTc2"
+  automatically_closed: "MDU6TGFiZWwyMjg1Mjc2MjI3"
+        
+first_message: |
+  I am a bot that cleans up old issues that do not have activity.
+
+  This issue has not received feedback in the last six months. I am going to add the `inactive` label to
+  this issue. If this is still a pertinent issue, please add a comment or add an emoji to an existing comment.
+
+  I will post again in 11 months with another reminder and will close this issue on it's birthday unless it has
+  some activity.
+
+second_message: |
+  I am a bot that cleans up old issues that do not have activity.
+
+  This issue has not received feedback in the last eleven months! If this is still a pertinent issue, please add a comment or add an emoji to an existing comment.
+
+  In one month will close this issue on it's birthday unless it has some activity.
+
+
+final_message: |
+  I am a bot that cleans up old issues that do not have activity.
+
+  Happy Birthday to this issue! :birthday:
+
+  Unfortunately, this issue has not received much attention in the last 12 months. Therefore, I am going to close it. Please feel free to reopen this issue or open a new issue sometime in the future. If this issue is a bug report, please check that the issue still exists in our newest version before reopening.

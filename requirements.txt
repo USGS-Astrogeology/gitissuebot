@@ -1,0 +1,5 @@
+python >= 3.7
+pytest
+requests
+requests-mock
+pyyaml
