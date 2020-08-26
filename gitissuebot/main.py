@@ -6,12 +6,12 @@ from .settings import config
 def run_query(query):
     """
     Runs a GraphQL query against the GitHub API.
-    
+
     Parameters
     ----------
     query : str
             The GraphQL string query to be passed to the API
-            
+
     Returns
     -------
       : dict
@@ -24,10 +24,10 @@ def run_query(query):
     else:
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
 
-def get_issues(query_func=run_query):
+def get_issues(query_func=run_query, issue_filter="states: OPEN, first:50"):
     """
     Get all of the open issues in a repository.
-    
+
     Returns
     -------
       : dict
@@ -38,7 +38,7 @@ def get_issues(query_func=run_query):
     query = f"""
     query {{
       repository(owner:"{config['owner']}", name:"{config['repository']}") {{
-        openIssues: issues(states: OPEN, last:1) {{
+        openIssues: issues({issue_filter}) {{
           edges {{
             node {{
               id
@@ -52,7 +52,7 @@ def get_issues(query_func=run_query):
                     author {{login}}
                     updatedAt
                     createdAt
-                    reactions(last:100) {{
+                    reactions(last:1) {{
                       edges {{
                         node {{
                           createdAt
@@ -61,30 +61,37 @@ def get_issues(query_func=run_query):
                     }}
                   }}
                 }}
-
               }}
-            }}
+            }} cursor
           }}
-        }} 
+          pageInfo {{
+            startCursor
+            endCursor
+          }}
+        }}
       }}
     }}
     """
     response = query_func(query) # Execute the query
+    if 'data' not in response.keys():
+        print(response)
+    elif 'errors' in response.keys():
+        print(response['errors'])
     result = response['data']['repository']['openIssues']['edges']
-    return [issue['node'] for issue in result]
+    return [issue['node'] for issue in result], result[-1]['cursor']
 
 def find_most_recent_activity(issue):
     """
     This func finds the most recent activity on an issue by iterating over all of
-    the content, omitting any posts by the bot, and finding the most recent UTC 
+    the content, omitting any posts by the bot, and finding the most recent UTC
     timestamp.
-    
+
     Parameters
     ----------
     issue : dict
             The JSON (dict) response from the github API for a single issue. We
             assume that the 'node' key has been omitted.
-            
+
     Returns
     -------
     age : obj
@@ -102,7 +109,7 @@ def find_most_recent_activity(issue):
             continue
         dates.append(comment['updatedAt'])
         dates.append(comment['createdAt'])
-        
+
         # Step over any reactions
         for reaction in comment['reactions']['edges']:
             reaction = reaction['node']
@@ -110,20 +117,20 @@ def find_most_recent_activity(issue):
     newest_activity = max(dates)
     age = datetime.utcnow() - datetime.strptime(newest_activity, '%Y-%m-%dT%H:%M:%SZ')
     return age
-    
+
 def update_with_message(issueid, msg, query_func=run_query):
     """
     Using the Github V4 GraphQL API, update an issue
     with a given message.
-    
+
     Parameters
     ----------
     issueid : str
               The GitHub hashed issue identifier
-    
+
     msg : str
           The string message to be posted by the API key holder
-          
+
     Returns
     -------
       : dict
@@ -132,7 +139,7 @@ def update_with_message(issueid, msg, query_func=run_query):
     # Add a comment query
     query = f"""
     mutation {{
-      addComment(input:{{ 
+      addComment(input:{{
         subjectId: "{issueid}",
         body:"{msg}"
       }}) {{
@@ -146,7 +153,7 @@ def add_label(issueid, labelid, query_func=run_query):
     """
     Using the Github V4 GraphQL API, add a
     label to an issue.
-    
+
     Parameters
     ----------
     issueid : str
@@ -154,7 +161,7 @@ def add_label(issueid, labelid, query_func=run_query):
 
     labelid : str
               The GitHub hashed label identifier
-    
+
     Returns
     -------
       : dict
@@ -174,12 +181,12 @@ def close_issue(issueid, query_func=run_query):
     """
     Using the Github V4 GraphQL API, close
     an issue.
-    
+
     Parameters
     ----------
     issueid : str
               The GitHub hashed issue identifier
-    
+
     Returns
     -------
       : dict
@@ -193,21 +200,21 @@ def close_issue(issueid, query_func=run_query):
       }}
     }}"""
     return query_func(query)
-    
+
 def find_and_update_inactive_issues(issues, query_func=run_query):
     """
     Parse a list of of GitHub API response issues and
     update those issue which meet the inactivity criteria.
-    
+
     Issues with no activity in the last 182 are updated with
     the `inactive` label and a message.
-    
-    Issues with no activity in 335 days are updated with a 
+
+    Issues with no activity in 335 days are updated with a
     nudge message.
-    
+
     Issues with no activity after 365 days are closed with
     a message and an `automatically_closed` label.
-    
+
     Parameters
     ----------
     issues : list
@@ -227,4 +234,3 @@ def find_and_update_inactive_issues(issues, query_func=run_query):
         elif age.days >= 182:
             resp = update_with_message(issue['id'], config['first_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['inactive'], query_func=query_func)
-
