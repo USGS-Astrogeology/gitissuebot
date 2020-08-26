@@ -16,13 +16,16 @@ def test_exception_run_query(requests_mock):
 def test_run_successful_query(requests_mock):
     requests_mock.post('mock://test.org', status_code=200, json={'foo':'bar'})
     resp = run_query('some_query')
-    assert resp == {'foo':'bar'}    
+    assert resp == {'foo':'bar'}
 
 def test_get_issues():
-    response_str = {'data':{'repository':{'openIssues':{'edges':[{'node':'a'}, {'node':'b'}, {'node':'c'}]}}}}
+    response_str = {'data':{'repository':{'openIssues':{'edges':[{'node':'a', 'cursor': 'some_cursor'},
+                                                                 {'node':'b', 'cursor': 'some_cursor'},
+                                                                 {'node':'c', 'cursor': 'some_cursor'}]}}}}
     response = lambda x: response_str
-    issues = get_issues(query_func=response)
+    issues, cursor = get_issues(query_func=response)
     assert issues == ['a', 'b', 'c']
+    assert cursor == 'some_cursor'
 
 # Case where comment is newest
 # Case where reaction is newest
@@ -60,15 +63,15 @@ def test_find_most_recent_activity(times, names, position_of_newest, expected):
                             'updatedAt':times[9],
                             'author':{'login':names[2]},
                             'reactions':{'edges':[
-                                ]}}},          
+                                ]}}},
                 ]}}
         age = find_most_recent_activity(issue)
         print(age)
     assert age.days == 0
-    
+
 
 def test_update_with_message():
-    
+
     issueid = 0
     message = 'test'
     query_func = lambda x: x
@@ -99,7 +102,7 @@ def test_inactive_182():
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(182)) as fmr,\
         mock.patch('gitissuebot.main.update_with_message') as update,\
         mock.patch('gitissuebot.main.add_label') as label:
-        find_and_update_inactive_issues([{'id':"foo"},])  
+        find_and_update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
         assert label.called
@@ -107,7 +110,7 @@ def test_inactive_182():
 def test_inactive_335():
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(335)) as fmr,\
         mock.patch('gitissuebot.main.update_with_message') as update:
-        find_and_update_inactive_issues([{'id':"foo"},])  
+        find_and_update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
 
@@ -115,7 +118,7 @@ def test_inactive_335():
         mock.patch('gitissuebot.main.update_with_message') as update,\
         mock.patch('gitissuebot.main.add_label') as label,\
         mock.patch('gitissuebot.main.close_issue') as close:
-        find_and_update_inactive_issues([{'id':"foo"},])  
+        find_and_update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
         assert label.called
