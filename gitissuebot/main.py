@@ -24,7 +24,7 @@ def run_query(query):
     else:
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
 
-def get_issues(query_func=run_query, issue_filter="states: OPEN, first:50"):
+def get_issues(query_func=run_query, issue_filter="states: OPEN, first:1"):
     """
     Get all of the open issues in a repository.
 
