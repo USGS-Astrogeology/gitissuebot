@@ -13,7 +13,7 @@ first_message: |
   This issue has not received feedback in the last six months. I am going to add the `inactive` label to
   this issue. If this is still a pertinent issue, please add a comment or add an emoji to an existing comment.
 
-  I will post again in five months with another reminder and will close this issue on it's birthday unless it has
+  I will post again in 11 months with another reminder and will close this issue on its birthday unless it has
   some activity.
 
 second_message: |
@@ -21,7 +21,7 @@ second_message: |
 
   This issue has not received feedback in the last eleven months! If this is still a pertinent issue, please add a comment or add an emoji to an existing comment.
 
-  In one month I will close this issue on it's birthday unless it has some activity.
+  In one month I will close this issue on its birthday unless it has some activity.
 
 
 final_message: |
