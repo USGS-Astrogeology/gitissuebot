@@ -24,7 +24,7 @@ def run_query(query):
     else:
         raise Exception("Query failed to run by returning code of {}. {}".format(request.status_code, query))
 
-def get_issues(query_func=run_query, issue_filter="states: OPEN, first:50"):
+def get_issues(query_func=run_query, issue_filter="states: OPEN, first:1"):
     """
     Get all of the open issues in a repository.
 
@@ -201,7 +201,7 @@ def close_issue(issueid, query_func=run_query):
     }}"""
     return query_func(query)
 
-def find_and_update_inactive_issues(issues, query_func=run_query):
+def update_inactive_issues(issues, query_func=run_query):
     """
     Parse a list of of GitHub API response issues and
     update those issue which meet the inactivity criteria.

@@ -4,7 +4,7 @@ import pytest
 import requests_mock
 import requests
 
-from gitissuebot.main import get_issues, update_with_message, add_label, close_issue, find_most_recent_activity, run_query, find_and_update_inactive_issues
+from gitissuebot.main import get_issues, update_with_message, add_label, close_issue, find_most_recent_activity, run_query, update_inactive_issues
 
 # test that a response comes back with a 200 and a .json() method
 
@@ -102,7 +102,7 @@ def test_inactive_182():
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(182)) as fmr,\
         mock.patch('gitissuebot.main.update_with_message') as update,\
         mock.patch('gitissuebot.main.add_label') as label:
-        find_and_update_inactive_issues([{'id':"foo"},])
+        update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
         assert label.called
@@ -110,7 +110,7 @@ def test_inactive_182():
 def test_inactive_335():
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(335)) as fmr,\
         mock.patch('gitissuebot.main.update_with_message') as update:
-        find_and_update_inactive_issues([{'id':"foo"},])
+        update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
 
@@ -118,7 +118,7 @@ def test_inactive_335():
         mock.patch('gitissuebot.main.update_with_message') as update,\
         mock.patch('gitissuebot.main.add_label') as label,\
         mock.patch('gitissuebot.main.close_issue') as close:
-        find_and_update_inactive_issues([{'id':"foo"},])
+        update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
         assert label.called
