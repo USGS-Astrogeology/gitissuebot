@@ -2,11 +2,12 @@ git_url: "https://api.github.com/graphql"
 owner: "USGS-Astrogeology"
 repository: "ISIS3"
 APIKEY: "ADD YOUR KEY"
+ssl_cert: "True"
 
 labelids:
   inactive: "MDU6TGFiZWwyMjg1Mjc0MTc2"
   automatically_closed: "MDU6TGFiZWwyMjg1Mjc2MjI3"
-        
+
 first_message: |
   I am a bot that cleans up old issues that do not have activity.
 

@@ -18,7 +18,7 @@ def run_query(query):
         The JSON (dict) response from the API
     """
     headers = {"Authorization": f"Bearer {config['APIKEY']}"}
-    request = requests.post(config['git_url'], json={'query':query}, headers=headers)
+    request = requests.post(config['git_url'], json={'query':query}, headers=headers, verify=config['ssl_cert'])
     if request.status_code == 200:
         return request.json()
     else:
