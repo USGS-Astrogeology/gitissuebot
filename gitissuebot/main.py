@@ -232,14 +232,11 @@ def update_inactive_issues(issues, query_func=run_query):
     labelids = config['labelids']
 
     for issue in issues:
-        print(issue)
         age = find_most_recent_activity(issue)
         try:
             lnames = [x['node']['name'] for x in issue['labels']['edges']]
-        except KeyError as e:
-            print(e)
+        except KeyError:
             lnames = []
-        print(lnames)
         if age.days >= 365:
             resp = update_with_message(issue['id'], config['final_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['automatically_closed'], query_func=query_func)
