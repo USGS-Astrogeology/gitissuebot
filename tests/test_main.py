@@ -107,12 +107,52 @@ def test_inactive_182():
         assert update.called
         assert label.called
 
+
+def test_already_inactive_182():
+    with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(182)) as fmr,\
+        mock.patch('gitissuebot.main.update_with_message') as update,\
+        mock.patch('gitissuebot.main.add_label') as label:
+        update_inactive_issues([{'id':"foo",
+                                 'labels':
+                                    {'edges':
+                                        [{'node':
+                                            {'id': 'MDU6TGFiZWwyMzA4MTcyMjM5',
+                                            'name': 'inactive'}
+                                            }
+                                        ]}
+                                    }
+                                ])
+        assert fmr.called
+        assert not update.called
+        assert not label.called
+
+
+def test_already_inactive_335():
+    with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(335)) as fmr,\
+        mock.patch('gitissuebot.main.update_with_message') as update,\
+        mock.patch('gitissuebot.main.add_label') as label:
+        update_inactive_issues([{'id':"foo",
+                                 'labels':
+                                    {'edges':
+                                        [{'node':
+                                            {'id': 'MDU6TGFiZWwyMzU5MDg1NjAy',
+                                            'name': 'pending_close'}
+                                            }
+                                        ]}
+                                    }
+                                ])
+        assert fmr.called
+        assert not update.called
+        assert not label.called
+
 def test_inactive_335():
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(335)) as fmr,\
-        mock.patch('gitissuebot.main.update_with_message') as update:
+        mock.patch('gitissuebot.main.update_with_message') as update,\
+        mock.patch('gitissuebot.main.add_label') as label:
         update_inactive_issues([{'id':"foo"},])
         assert fmr.called
         assert update.called
+        assert label.called
 
     with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(366)) as fmr,\
         mock.patch('gitissuebot.main.update_with_message') as update,\
