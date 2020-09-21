@@ -136,7 +136,7 @@ def test_already_inactive_335():
                                     {'edges':
                                         [{'node':
                                             {'id': 'MDU6TGFiZWwyMzU5MDg1NjAy',
-                                            'name': 'pending_close'}
+                                            'name': 'pending_closure'}
                                             }
                                         ]}
                                     }

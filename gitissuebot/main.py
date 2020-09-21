@@ -241,9 +241,9 @@ def update_inactive_issues(issues, query_func=run_query):
             resp = update_with_message(issue['id'], config['final_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['automatically_closed'], query_func=query_func)
             resp = close_issue(issue['id'], query_func=query_func)
-        elif age.days >= 335 and 'pending_close' not in lnames:
+        elif age.days >= 335 and 'pending_closure' not in lnames:
             resp = update_with_message(issue['id'], config['second_message'], query_func=query_func)
-            resp = add_label(issue['id'], labelids['pending_close'], query_func=query_func)
+            resp = add_label(issue['id'], labelids['pending_closure'], query_func=query_func)
         elif age.days >= 182 and age.days <= 334 and 'inactive' not in lnames:
             resp = update_with_message(issue['id'], config['first_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['inactive'], query_func=query_func)
