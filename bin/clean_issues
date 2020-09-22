@@ -41,3 +41,23 @@ if __name__ == "__main__":
         except IndexError as e:
             print("No more issues to parse, exiting.")
             break
+
+
+    issues, cursor = get_issues(issue_filter = f'states: OPEN, first:50, labels:"inactive"')
+    print(gathered_string.format(len(issues), issues[0]['title'], issues[-1]['title']))
+    # Update issues
+    if not args.no_update:
+        print(update_string.format(len(issues), issues[0]['title'], issues[-1]['title']))
+        remove_inactive_label(issues)
+
+    while True:
+        try:
+            issues, cursor = get_issues(issue_filter = f'states: OPEN, first:50, labels:"inactive", after:"{cursor}"')
+            print(gathered_string.format(len(issues), issues[0]['title'], issues[-1]['title']))
+            # Update issues
+            if not args.no_update:
+                print(update_string.format(len(issues), issues[0]['title'], issues[-1]['title']))
+                remove_inactive_label(issues)
+        except IndexError as e:
+            print("No more inactive issues to parse, exiting.")
+            break

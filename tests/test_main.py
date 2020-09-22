@@ -4,7 +4,7 @@ import pytest
 import requests_mock
 import requests
 
-from gitissuebot.main import get_issues, update_with_message, add_label, close_issue, find_most_recent_activity, run_query, update_inactive_issues
+from gitissuebot.main import get_issues, update_with_message, add_label, remove_label, close_issue, find_most_recent_activity, run_query, update_inactive_issues, remove_inactive_label
 
 # test that a response comes back with a 200 and a .json() method
 
@@ -90,6 +90,15 @@ def test_add_label():
     assert 'labelableId:"0"' in resp
     assert 'labelIds:["mystery"]' in resp
 
+def test_remove_label():
+    issueid = 0
+    labelid = 'mystery'
+    query_func = lambda x: x
+    resp = remove_label(issueid, labelid, query_func=query_func)
+    assert 'removeLabelsFromLabelable' in resp
+    assert 'labelableId:"0"' in resp
+    assert 'labelIds:["mystery"]' in resp
+
 def test_close_issue():
     issueid = 0
     query_func = lambda x: x
@@ -163,4 +172,37 @@ def test_already_inactive_335():
                                 ])
         assert fmr.called
         assert not update.called
+        assert not label.called
+
+
+def test_reactivate_issue_1():
+    with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(1)) as fmr,\
+        mock.patch('gitissuebot.main.remove_label') as label:
+        remove_inactive_label([{'id':"foo",
+                            'labels':
+                               {'edges':
+                                   [{'node':
+                                       {'id': 'MDU6TGFiZWwyMzU5MDg1NjAy',
+                                       'name': 'pending_closure'}
+                                       }
+                                   ]}
+                               }
+                           ])
+        assert fmr.called
+        assert label.called
+
+def test_reactivate_issue_200():
+    with mock.patch('gitissuebot.main.find_most_recent_activity', return_value=timedelta(200)) as fmr,\
+        mock.patch('gitissuebot.main.remove_label') as label:
+        remove_inactive_label([{'id':"foo",
+                            'labels':
+                               {'edges':
+                                   [{'node':
+                                       {'id': 'MDU6TGFiZWwyMzU5MDg1NjAy',
+                                       'name': 'pending_closure'}
+                                       }
+                                   ]}
+                               }
+                           ])
+        assert fmr.called
         assert not label.called

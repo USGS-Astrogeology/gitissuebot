@@ -185,6 +185,35 @@ def add_label(issueid, labelid, query_func=run_query):
     }}"""
     return query_func(query)
 
+
+def remove_label(issueid, labelid, query_func=run_query):
+    """
+    Using the Github V4 GraphQL API, add a
+    label to an issue.
+
+    Parameters
+    ----------
+    issueid : str
+              The GitHub hashed issue identifier
+
+    labelid : str
+              The GitHub hashed label identifier
+
+    Returns
+    -------
+      : dict
+        The JSON (dict) response from the GitHub API
+    """
+    query = f"""mutation {{
+      removeLabelsFromLabelable(input:{{
+        labelableId:"{issueid}",
+        labelIds:["{labelid}"]
+      }}) {{
+        clientMutationId
+      }}
+    }}"""
+    return query_func(query)
+
 def close_issue(issueid, query_func=run_query):
     """
     Using the Github V4 GraphQL API, close
@@ -247,3 +276,25 @@ def update_inactive_issues(issues, query_func=run_query):
         elif age.days >= 182 and age.days <= 334 and 'inactive' not in issue_labels:
             resp = update_with_message(issue['id'], config['first_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['inactive'], query_func=query_func)
+
+
+def remove_inactive_label(issues, query_func=run_query):
+    """
+    Remove "inactive" and "pending_closure" labels from issues
+    when new activity takes place.
+
+
+    Parameters
+    ----------
+    issues : list
+             of JSON (dict) issues with inactive / pending_closure label
+             from the GitHub API parsed down to the individual nodes (issues)
+    """
+    labelids = config['labelids']
+
+    for issue in issues:
+        age = find_most_recent_activity(issue)
+        if age.days < 182:
+            resp = remove_label(issue['id'],
+                                [labelids['pending_closure'], labelids['inactive']],
+                                query_func=query_func)
