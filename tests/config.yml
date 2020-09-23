@@ -2,11 +2,13 @@ git_url: "mock://test.org"
 owner: "NoOneKnows"
 repository: "TestTime"
 APIKEY: "my_magic_secret"
+ssl_cert: "False"
 
 labelids:
   inactive: "MDU6TGFiZWwyMjg1Mjc0MTc2"
   automatically_closed: "MDU6TGFiZWwyMjg1Mjc2MjI3"
-        
+  pending_closure: "MDU6TGFiZWwyMzU5MDg1NjAy"
+
 first_message: |
   I am a bot that cleans up old issues that do not have activity.
 

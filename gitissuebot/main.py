@@ -46,6 +46,14 @@ def get_issues(query_func=run_query, issue_filter="states: OPEN, first:1"):
               updatedAt
               createdAt
               url
+              labels(first:100) {{
+                  edges {{
+                    node {{
+                      id
+                      name
+                    }}
+                  }}
+                }}
               comments(last:100) {{
                 edges {{
                   node {{
@@ -225,12 +233,17 @@ def update_inactive_issues(issues, query_func=run_query):
 
     for issue in issues:
         age = find_most_recent_activity(issue)
+        try:
+            issue_labels = [x['node']['name'] for x in issue['labels']['edges']]
+        except KeyError:
+            issue_labels = []
         if age.days >= 365:
             resp = update_with_message(issue['id'], config['final_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['automatically_closed'], query_func=query_func)
             resp = close_issue(issue['id'], query_func=query_func)
-        elif age.days >= 335:
+        elif age.days >= 335 and 'pending_closure' not in issue_labels:
             resp = update_with_message(issue['id'], config['second_message'], query_func=query_func)
-        elif age.days >= 182:
+            resp = add_label(issue['id'], labelids['pending_closure'], query_func=query_func)
+        elif age.days >= 182 and age.days <= 334 and 'inactive' not in issue_labels:
             resp = update_with_message(issue['id'], config['first_message'], query_func=query_func)
             resp = add_label(issue['id'], labelids['inactive'], query_func=query_func)
