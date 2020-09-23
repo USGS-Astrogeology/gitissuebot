@@ -296,5 +296,5 @@ def remove_inactive_label(issues, query_func=run_query):
         age = find_most_recent_activity(issue)
         if age.days < 182:
             resp = remove_label(issue['id'],
-                                [labelids['pending_closure'], labelids['inactive']],
+                                [labelids['inactive'], labelids['pending_closure']],
                                 query_func=query_func)
